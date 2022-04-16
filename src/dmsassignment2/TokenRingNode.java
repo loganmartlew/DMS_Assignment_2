@@ -9,10 +9,17 @@ package dmsassignment2;
  * @author logan
  */
 public class TokenRingNode {
-    boolean hasToken = false;
-    boolean accessRequested = false;
+    private boolean hasToken = false;
+    private boolean accessRequested = false;
     
-    TokenRingNode next;
+    // RMI Object
+    private TokenRingNode next;
+    
+    public TokenRingNode() {}
+    
+    public void setNextNode(TokenRingNode node) {
+        this.next = node;
+    }
     
     public void recieveToken() {
         this.hasToken = true;
