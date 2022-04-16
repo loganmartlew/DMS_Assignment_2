@@ -31,6 +31,7 @@ public class TokenRingNode {
         
         // Do something
         
+        this.accessRequested = false;
         this.sendToken();
     }
     
