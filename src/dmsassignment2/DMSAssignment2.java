@@ -13,6 +13,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.Arrays;
 import static java.util.Arrays.asList;
 import java.util.List;
@@ -38,6 +39,12 @@ public class DMSAssignment2 {
         } catch(RemoteException e) {
             System.out.println("Could not initialize ChangRobertsElection object");
             e.printStackTrace();
+        }
+        
+        try {
+            startElection(registry);
+        } catch (RemoteException ex) {
+            System.out.println("Couldn't run election");
         }
     }
 
@@ -97,8 +104,6 @@ public class DMSAssignment2 {
     private static void initializeChangRoberts(Registry registry) throws RemoteException {
         ChangRobertsElectionImpl remoteObject = new ChangRobertsElectionImpl();
        
-        System.out.println("");
-       
         String objectName = getCreName(processID);
        
         PeerConnections connections = null;
@@ -112,54 +117,85 @@ public class DMSAssignment2 {
         if (connections == null) return;
         
         List<String> names = connections.getPeers();
-        System.out.println(names);
 
-        names.remove(Long.toString(processID));
-        System.out.println(names);
-        System.out.println("");
-
-        try {
-            if (names.size() < 1) {
-                remoteObject.setNextProcess(remoteObject);
-            }
-
-            if (names.size() == 1) {
-                System.out.println("NAMES SIZE 1");
-                System.out.println("Names:");
-                System.out.println(names);
-                System.out.println("Name: " + names.get(0));
-                System.out.println("Registry Names:");
-                System.out.println(Arrays.toString(registry.list()));
-                System.out.println("CRE Name: " + getCreName(names.get(0)));
-                
-                ChangRobertsElection otherObject = 
-                    (ChangRobertsElection) registry.lookup(getCreName(names.get(0)));
-                
-                otherObject.setNextProcess(remoteObject);
-                remoteObject.setNextProcess(otherObject);
-            }
-
-            if (names.size() > 1) {
-                ChangRobertsElection object0 = 
-                    (ChangRobertsElection) registry.lookup(getCreName(names.get(0)));
-                ChangRobertsElection object1 = 
-                    (ChangRobertsElection) registry.lookup(getCreName(names.get(1)));
-
-                object0.setNextProcess(remoteObject);
-                remoteObject.setNextProcess(object1);
-            }
-        } catch(NotBoundException | AccessException ex) {
-            System.out.println("Error looking up remote ChangRoberts objects");
-            System.out.println(ex.getMessage());
-            ex.printStackTrace();
-        }
+//            if (names.size() < 1) {
+//                System.out.println("Names at < 1");
+//                System.out.println(names);
+//                remoteObject.setNextProcess(objectName);
+//                System.out.println(objectName + " pointing to " + objectName);
+//            }
+//
+//            if (names.size() == 1) {
+//                System.out.println("Names at 1");
+//                System.out.println(names);
+//                String otherObjectName = getCreName(names.get(0));
+//                ChangRobertsElection otherObject = 
+//                    (ChangRobertsElection) registry.lookup(otherObjectName);
+//                
+//                otherObject.setNextProcess(objectName);
+//                System.out.println(otherObjectName + " pointing to " + objectName);
+//                remoteObject.setNextProcess(otherObjectName);
+//                System.out.println(objectName + " pointing to " + otherObjectName);
+//            }
+//
+//            if (names.size() > 1) {
+//                System.out.println("Names at > 1");
+//                System.out.println(names);
+//                String object0Name = getCreName(names.get(0));
+//                ChangRobertsElection object0 = 
+//                    (ChangRobertsElection) registry.lookup(object0Name);
+//                
+//                String object1Name = getCreName(names.get(1));
+//                ChangRobertsElection object1 = 
+//                    (ChangRobertsElection) registry.lookup(object1Name);
+//
+//                object0.setNextProcess(object1Name);
+//                System.out.println(object0Name + " pointing to " + objectName);
+//                remoteObject.setNextProcess(object0Name);
+//                System.out.println(objectName + " pointing to " + object1Name);
+//            }
+        
 
         ChangRobertsElection stub = (ChangRobertsElection) 
             UnicastRemoteObject.exportObject(remoteObject, 0);
 
-        registry.rebind(getCreName(processID), stub);
+        registry.rebind(objectName, stub);
+        
+        arrangeChangRobertsNodes(names, registry);
 
         System.out.println("Added to election ring");
+    }
+    
+    private static void arrangeChangRobertsNodes(List<String> names, Registry registry) 
+            throws RemoteException {
+        List<String> creNames = new ArrayList();
+        List<ChangRobertsElection> creObjects = new ArrayList();
+        names.forEach(name -> creNames.add(getCreName(name)));
+        creNames.forEach(name -> creObjects.add(getElectionObject(name, registry)));
+        
+        for (int i = 0; i < creNames.size(); i++) {
+            if (i == creNames.size() - 1) {
+                creObjects.get(i).setNextProcess(creNames.get(0));
+                System.out.println(creNames.get(i) + " > " + creNames.get(0));
+                continue;
+            }
+            
+            creObjects.get(i).setNextProcess(creNames.get(i + 1));
+            System.out.println(creNames.get(i) + " > " + creNames.get(i + 1));
+        }
+    }
+    
+    private static ChangRobertsElection getElectionObject(String name, Registry registry) {
+        try {
+            ChangRobertsElection object = (ChangRobertsElection)
+                    registry.lookup(name);
+            
+            return object;
+        } catch (RemoteException | NotBoundException ex) {
+            System.out.println("Couldn't look up object with name " + name);
+        }
+        
+        return null;
     }
     
     private static String getCreName(long processName) {
