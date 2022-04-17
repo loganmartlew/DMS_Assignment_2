@@ -6,6 +6,7 @@ package dmsassignment2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.rmi.registry.LocateRegistry;
 
 /**
  *
@@ -13,6 +14,7 @@ import java.util.List;
  */
 public class PeerConnectionsImpl implements PeerConnections {
     private List<String> peers;
+    public static final String NAME = "connections";
     
     public PeerConnectionsImpl() {
         this.peers = new ArrayList();
