@@ -4,13 +4,14 @@
  */
 package dmsassignment2;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 
 /**
  *
  * @author Logan
  */
-public class ChangRobertsElectionImpl implements ChangRobertsElection {
+public class ChangRobertsElectionImpl implements ChangRobertsElection, Serializable {
     private static final long ID = ProcessHandle.current().pid();
     
     private ChangRobertsElection nextProcess;
