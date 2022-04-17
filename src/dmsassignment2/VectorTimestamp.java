@@ -21,8 +21,6 @@ public class VectorTimestamp {
         for (int i = 0; i <= index; i++) {
             this.vector.add(0);
         }
-        
-        System.out.println(vector);
     }
     
     public void addMember() {

@@ -4,7 +4,16 @@
  */
 package dmsassignment2;
 
-import java.util.ArrayList;
+import java.net.MalformedURLException;
+import java.rmi.AccessException;
+import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  *
@@ -16,34 +25,17 @@ public class DMSAssignment2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
-        System.out.println("Hello");
+        /*
         
-        VectorTimestamp timestamp = new VectorTimestamp(4);
+        get registry or create it
         
-        ArrayList<Integer> oldVector = new ArrayList();
-        oldVector.add(5);
-        oldVector.add(7);
-        oldVector.add(54);
-        oldVector.add(8);
-        oldVector.add(4);
-        timestamp.setVector(oldVector);
+        check if ProcessConnections object in registry
         
-        System.out.println(timestamp.getVector());
+        create it if not
         
-        ArrayList<Integer> newVector = new ArrayList();
-        newVector.add(3);
-        newVector.add(9);
-        newVector.add(55);
-        newVector.add(1);
-        newVector.add(1);
+        add self to connections
         
-        try {
-            timestamp.update(newVector);
-        
-            System.out.println(timestamp.getVector());
-        } catch (Exception e) {}
-        
+        */
     }
-    
+
 }
