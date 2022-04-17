@@ -22,6 +22,8 @@ import java.util.logging.Logger;
  * @author logan
  */
 public class DMSAssignment2 {
+    
+    private static final long processID = ProcessHandle.current().pid();
 
     /**
      * @param args the command line arguments
@@ -51,8 +53,6 @@ public class DMSAssignment2 {
                 registry.rebind(PeerConnectionsImpl.NAME, stub);
             }
             
-            long processID = ProcessHandle.current().pid();
-            
             PeerConnections connections;
             try {
                 connections = (PeerConnections) registry.lookup(PeerConnectionsImpl.NAME);
@@ -72,5 +72,9 @@ public class DMSAssignment2 {
         }
         
         return null;
+    }
+    
+    private static void initializeChangRoberts(Registry registry) {
+        
     }
 }
