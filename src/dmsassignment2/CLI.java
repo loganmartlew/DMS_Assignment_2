@@ -6,6 +6,8 @@ package dmsassignment2;
 
 import java.util.Scanner;
 
+import javax.sound.sampled.SourceDataLine;
+
 /**
  *
  * @author Logan
@@ -142,7 +144,7 @@ public class CLI {
                         }
                     }
                     catch(Exception e) {
-                        System.out.println("User not found");
+                        System.out.println("User not found" + e);
                     }
 
                 }
