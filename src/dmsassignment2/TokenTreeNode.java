@@ -33,6 +33,7 @@ public class TokenTreeNode {
     }
     
     public void constructFullTree(TokenTreeNode parent, List<TokenTreeNode> nodes) {
+        this.parent = parent;
         if (parent == null) {
             this.tokenLocation = TokenLocation.HERE;    // Root node holds the token to start
         }   // else location remains ABOVE
