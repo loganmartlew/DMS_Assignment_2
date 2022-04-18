@@ -5,13 +5,7 @@
 package dmsassignment2;
 
 import java.io.Serializable;
-import java.rmi.AccessException;
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -20,59 +14,35 @@ import java.util.logging.Logger;
 public class ChangRobertsElectionImpl implements ChangRobertsElection, Serializable {
     private static final long ID = ProcessHandle.current().pid();
     
-    private String nextProcessName;
+    private ChangRobertsElection nextProcess;
     private long leaderProcessID;
     
     private boolean participant = false;
     
-    private Registry registry = null;
-    
     public ChangRobertsElectionImpl() {}
     
-    public void setNextProcess(String nextProcess) throws RemoteException {
-        this.nextProcessName = nextProcess;
+    public ChangRobertsElectionImpl(ChangRobertsElectionImpl nextProcess) {
+        this.nextProcess = nextProcess;
     }
     
-    private void setRegistry() throws RemoteException {
-        try {
-            LocateRegistry.createRegistry(1099);
-        } catch (RemoteException e) {
-        }
-        
-        Registry newRegistry = LocateRegistry.getRegistry();
-        
-        this.registry = newRegistry;
-    }
-    
-    private ChangRobertsElection getNextProcess() throws RemoteException {
-        this.setRegistry();
-        
-        try {
-            ChangRobertsElection nextProcess =
-                    (ChangRobertsElection) this.registry.lookup(this.nextProcessName);
-            
-            return nextProcess;
-        } catch (NotBoundException | AccessException ex) {
-            System.out.println("Error looking up next process");
-        }
-        
-        return null;
+    public void setNextProcess(ChangRobertsElection nextProcess) throws RemoteException {
+        this.nextProcess = nextProcess;
     }
     
     public void startElection() throws RemoteException {
         this.participant = true;
-        this.getNextProcess().recieveCandidate(ID);
+        this.nextProcess.recieveCandidate(ID);
     }
     
     public void recieveCandidate(long candidate) throws RemoteException {
         if (candidate > ID) {
-            System.out.println("Candidate is better");
+            
             this.participant = true;
-            this.getNextProcess().recieveCandidate(candidate);
+            this.nextProcess.recieveCandidate(candidate);
             
         } else if (candidate == ID) {
-            System.out.println("I won");
-            this.getNextProcess().recieveLeader(ID);
+            
+            this.nextProcess.recieveLeader(ID);
             
         } else if (candidate < ID) {
             if (!this.participant) {
@@ -87,7 +57,7 @@ public class ChangRobertsElectionImpl implements ChangRobertsElection, Serializa
         System.out.println("Leader: " + leader);
         
         if (leader != ID) {
-            this.getNextProcess().recieveLeader(leader);
+            this.nextProcess.recieveLeader(leader);
         }
     }
 }

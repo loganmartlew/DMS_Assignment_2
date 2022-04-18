@@ -5,20 +5,15 @@
 package dmsassignment2;
 
 
-import java.net.MalformedURLException;
 import java.rmi.AccessException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import static java.util.Arrays.asList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -118,44 +113,6 @@ public class DMSAssignment2 {
         
         List<String> names = connections.getPeers();
 
-//            if (names.size() < 1) {
-//                System.out.println("Names at < 1");
-//                System.out.println(names);
-//                remoteObject.setNextProcess(objectName);
-//                System.out.println(objectName + " pointing to " + objectName);
-//            }
-//
-//            if (names.size() == 1) {
-//                System.out.println("Names at 1");
-//                System.out.println(names);
-//                String otherObjectName = getCreName(names.get(0));
-//                ChangRobertsElection otherObject = 
-//                    (ChangRobertsElection) registry.lookup(otherObjectName);
-//                
-//                otherObject.setNextProcess(objectName);
-//                System.out.println(otherObjectName + " pointing to " + objectName);
-//                remoteObject.setNextProcess(otherObjectName);
-//                System.out.println(objectName + " pointing to " + otherObjectName);
-//            }
-//
-//            if (names.size() > 1) {
-//                System.out.println("Names at > 1");
-//                System.out.println(names);
-//                String object0Name = getCreName(names.get(0));
-//                ChangRobertsElection object0 = 
-//                    (ChangRobertsElection) registry.lookup(object0Name);
-//                
-//                String object1Name = getCreName(names.get(1));
-//                ChangRobertsElection object1 = 
-//                    (ChangRobertsElection) registry.lookup(object1Name);
-//
-//                object0.setNextProcess(object1Name);
-//                System.out.println(object0Name + " pointing to " + objectName);
-//                remoteObject.setNextProcess(object0Name);
-//                System.out.println(objectName + " pointing to " + object1Name);
-//            }
-        
-
         ChangRobertsElection stub = (ChangRobertsElection) 
             UnicastRemoteObject.exportObject(remoteObject, 0);
 
@@ -173,14 +130,14 @@ public class DMSAssignment2 {
         names.forEach(name -> creNames.add(getCreName(name)));
         creNames.forEach(name -> creObjects.add(getElectionObject(name, registry)));
         
-        for (int i = 0; i < creNames.size(); i++) {
-            if (i == creNames.size() - 1) {
-                creObjects.get(i).setNextProcess(creNames.get(0));
+        for (int i = 0; i < creObjects.size(); i++) {
+            if (i == creObjects.size() - 1) {
+                creObjects.get(i).setNextProcess(creObjects.get(0));
                 System.out.println(creNames.get(i) + " > " + creNames.get(0));
                 continue;
             }
             
-            creObjects.get(i).setNextProcess(creNames.get(i + 1));
+            creObjects.get(i).setNextProcess(creObjects.get(i + 1));
             System.out.println(creNames.get(i) + " > " + creNames.get(i + 1));
         }
     }

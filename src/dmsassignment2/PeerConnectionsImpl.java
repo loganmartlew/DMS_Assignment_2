@@ -6,7 +6,6 @@ package dmsassignment2;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.rmi.registry.LocateRegistry;
 
 /**
  *
