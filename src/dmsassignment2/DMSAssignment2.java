@@ -365,7 +365,7 @@ public class DMSAssignment2 {
         return user.getBiography();
     }
     
-    public static void rateBio(String username, int rating) {
+    public static void rateBio(String username, int rating) throws RemoteException, NullPointerException {
         TokenTreeNode node = getTreeObject(TokenTreeNodeImpl.getTreeObjectName(PROCESS_ID));
         if (node == null) {
             throw new NullPointerException("Could not find tree node");
@@ -376,7 +376,19 @@ public class DMSAssignment2 {
             throw new NullPointerException("Could not find user");
         };
 
-
+        if(node.getToken()) {
+            try {
+                user.rate(rating);
+            } catch (RemoteException ex) {
+                return;
+            }
+            finally {
+                node.releaseToken();
+            }
+        }
+        else {
+            System.out.println("getToken failed");
+        }
     }
     
     public static int getBioRating(String username) throws RemoteException, NullPointerException {
