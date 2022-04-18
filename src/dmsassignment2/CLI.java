@@ -11,13 +11,21 @@ import java.util.Scanner;
  * @author Logan
  */
 public class CLI {
-    private static Scanner scan = new Scanner(System.in);
-    private static final String[] COMMANDS = {"leave", "snapshot"};
+    private static final Scanner scan = new Scanner(System.in);
+    private static final String[] COMMANDS = {"leave", "snapshot", "get bio", "rate bio"};
     
     public static String getIp() {
         System.out.println("Enter IP Adress of P2P Network");
         System.out.print(">");
-        return scan.nextLine();
+        return scan.nextLine().strip();
+    }
+    
+    private static String getUsername(){
+        String name;
+        System.out.print("Username: ");
+        name = scan.nextLine().strip();
+        
+        return name;
     }
     
     public static void commandLoop() {
@@ -29,9 +37,9 @@ public class CLI {
         String cmd;
         while(true){
             System.out.print(">");
-            cmd = scan.nextLine().toLowerCase().strip(); // Fetch input ignorning case and white space
+            cmd = scan.nextLine().strip().toLowerCase(); // Fetch input ignorning case and white space
             
-            switch(cmd){
+            switch(cmd) {
                 case "leave" -> {
                     if(DMSAssignment2.leaveNetwork()) {
                         System.out.println("Successfully left the P2P network.");
@@ -44,6 +52,30 @@ public class CLI {
                 
                 case "snapshot" -> {
                     System.out.println(DMSAssignment2.takeSnapshot());
+                }
+                
+                case "get bio" -> {
+                    System.out.println(DMSAssignment2.getBio(getUsername()));
+                }
+                
+                case "rate bio" -> {
+                    String username = getUsername();
+                    System.out.println("Like[l], Dislike[d], cancel[ENTER]");
+                    String choice = scan.nextLine().strip().toLowerCase();
+                    switch(choice.charAt(0)){
+                        case 'l' -> {
+                            DMSAssignment2.rateBio(username, 1);
+                            System.out.println("Liked " + username + "'s biography.");
+                        }
+                        case 'd' -> {
+                            DMSAssignment2.rateBio(username, -1);
+                            System.out.println("Disliked " + username + "'s biography.");
+                        }
+                        default -> {
+                            System.out.println("Cancelled.");
+                        }
+                    }
+                    
                 }
                     
                 default -> {

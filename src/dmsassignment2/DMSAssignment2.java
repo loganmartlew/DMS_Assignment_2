@@ -105,11 +105,6 @@ public class DMSAssignment2 {
         return true;
     }
     
-    public static String takeSnapshot(){
-        // TODO: Implement snapshot algorithm
-        return "";
-    }
-    
     private static void startElection() {
         try {
             LeaderElection election =
@@ -190,5 +185,19 @@ public class DMSAssignment2 {
         }
         
         return null;
+    }
+    
+    public static String getBio(String fetchUsername){
+        // TODO: Implement RMI get user biography
+        return "";
+    }
+    
+    public static void rateBio(String username, int rating){
+        // TODO: Implement token ring syncronised rate biography with +1 or -1
+    }
+    
+    public static String takeSnapshot(){
+        // TODO: Implement snapshot algorithm
+        return "";
     }
 }
