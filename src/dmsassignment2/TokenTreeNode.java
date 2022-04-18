@@ -34,6 +34,7 @@ public class TokenTreeNode implements Remote {
     }
     
     public void constructFullTree(TokenTreeNode parent, List<TokenTreeNode> nodes) {
+        this.parent = parent;
         if (parent == null) {
             this.tokenLocation = TokenLocation.HERE;    // Root node holds the token to start
         }   // else location remains ABOVE
@@ -56,7 +57,11 @@ public class TokenTreeNode implements Remote {
     }
     
 
-    public synchronized boolean getToken(TokenTreeNode requester) {   // Syncronised on this node so that only one thread can ask this node for the token at a time 
+    public boolean getToken() {
+        return getToken(null);
+    }
+
+    private synchronized boolean getToken(TokenTreeNode requester) {   // Syncronised on this node so that only one thread can ask this node for the token at a time 
         if (this.tokenLocation == TokenLocation.HERE) {
             if (usingToken) {
                 // Block the requesting node until the token is released
