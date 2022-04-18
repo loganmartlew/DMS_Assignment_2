@@ -17,5 +17,6 @@ public interface TokenTreeNode extends Remote, Serializable {
     public void constructFullTree(TokenTreeNode parent, List<TokenTreeNode> nodes) throws RemoteException;
     public boolean getToken() throws RemoteException;
     public boolean getToken(TokenTreeNode requester) throws RemoteException;
+    public String getPid() throws RemoteException;
     public void releaseToken() throws RemoteException;
 }

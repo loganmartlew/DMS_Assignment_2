@@ -21,7 +21,7 @@ public class TokenTreeNodeImpl implements TokenTreeNode, Serializable {
         HERE
     }
 
-    public final String pid;
+    private final String pid;
     
     private TokenTreeNode parent = null;
     private TokenTreeNode left = null;
@@ -33,6 +33,10 @@ public class TokenTreeNodeImpl implements TokenTreeNode, Serializable {
     
     public TokenTreeNodeImpl(String pid) {
         this.pid = pid;
+    }
+
+    public String getPid() throws RemoteException {
+        return pid;
     }
     
     public void constructFullTree(TokenTreeNode parent, List<TokenTreeNode> nodes) throws RemoteException {
@@ -102,18 +106,20 @@ public class TokenTreeNodeImpl implements TokenTreeNode, Serializable {
         }
 
         // TOKEN is now HERE
-        if(requester == left) {
-            tokenLocation = TokenLocation.LEFT;
-        }
-        else if(requester == right) {
-            tokenLocation = TokenLocation.RIGHT;
-        }
-        else if (requester == parent) {
-            tokenLocation = TokenLocation.ABOVE;
-        }
-        else {
+        if (requester == null) {
             usingToken = true;
         }
+        else if(requester.getPid() == left.getPid()) {
+            tokenLocation = TokenLocation.LEFT;
+        }
+        else if(requester.getPid() == right.getPid()) {
+            tokenLocation = TokenLocation.RIGHT;
+        }
+        //else if (requester.getPid() == parent.getPid()) {
+        else {
+            tokenLocation = TokenLocation.ABOVE;
+        }
+
 
         return true;
     }
