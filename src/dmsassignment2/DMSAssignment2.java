@@ -171,9 +171,31 @@ public class DMSAssignment2 {
         return null;
     }
     
-//    private static User getUser() {
-//        
-//    }
+    private static User getCurrentUser() {
+       PeerConnections connections = getPeerConnections();
+
+        try {
+            User user = connections.getUserById(Long.toString(PROCESS_ID));
+            return user;
+        } catch (RemoteException ex) {
+            System.out.println("Unable to get user from connections");
+        }
+
+        return null;
+    }
+
+    private static User getUser(String username) {
+        PeerConnections connections = getPeerConnections();
+
+        try {
+            User user = connections.getUserByName(username);
+            return user;
+        } catch (RemoteException ex) {
+            System.out.println("Unable to get user from connections");
+        }
+
+        return null;
+        }
     
     // ----- User command methods ----- \\
     
@@ -190,7 +212,7 @@ public class DMSAssignment2 {
         try {
             newUser = new User(Long.toString(PROCESS_ID), username);
             User stub = (User) UnicastRemoteObject.exportObject(newUser, 0);
-            registry.rebind(User.getUserObjectName(PROCESS_ID), newUser);
+            registry.rebind(User.getUserObjectName(PROCESS_ID), stub);
         } catch (RemoteException ex) {
             System.out.println("Failed to add user to registry");
             return false;
@@ -240,23 +262,40 @@ public class DMSAssignment2 {
     }
     
     public static void setBio(String newBio) {
-        // TODO: set current user bio
+        User user = getCurrentUser();
+        if (user == null) return;
+
+        try {
+            user.setBiography(newBio);
+        } catch (RemoteException ex) {
+            System.out.println("Failed to set bio");
+        }
     }
     
-    public static String getBio(String fetchUsername){
-        // TODO: Implement RMI get user biography
-        
-        
-        return "";
+    public static String getBio(String username){
+        User user = getUser(username);
+        if (user == null) return "User not found";
+
+        try {
+            return user.getBiography();
+        } catch (RemoteException ex) {
+            System.out.println("Could not retrieve biography");
+        }
+
+        return "Error getting bio";
     }
     
     public static void rateBio(String username, int rating){
         // TODO: Implement token ring syncronised rate biography with +1 or -1
     }
     
-    public static int getBioRating(String fetchUsername) {
-        // TODO: get the bio rating for the selected user
-        return 0;
+    public static int getBioRating(String username) throws RemoteException {
+        User user = getUser(username);
+        if (user == null) {
+            throw new NullPointerException("User does not exist");
+        }
+
+        return user.getBiographyRating();
     }
     
     public static String takeSnapshot(){

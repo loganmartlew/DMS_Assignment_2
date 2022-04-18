@@ -17,4 +17,6 @@ public interface PeerConnections extends Remote {
     public void removePeer(String id) throws RemoteException;
     public List<User> getPeers() throws RemoteException;
     public List<String> getNames() throws RemoteException;
+    public User getUserByName(String name) throws RemoteException;
+    public User getUserById(String id) throws RemoteException;
 }
