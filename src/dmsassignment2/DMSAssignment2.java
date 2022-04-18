@@ -167,6 +167,10 @@ public class DMSAssignment2 {
         return 0;
     }
     
+    public static boolean isConnected() {
+        return connected;
+    }
+    
     
     // ----- User command methods ----- \\
     
@@ -219,6 +223,10 @@ public class DMSAssignment2 {
         return true;
     }
     
+    public static void setBio(String newBio) {
+        // TODO: set current user bio
+    }
+    
     public static String getBio(String fetchUsername){
         // TODO: Implement RMI get user biography
         return "";
@@ -226,6 +234,11 @@ public class DMSAssignment2 {
     
     public static void rateBio(String username, int rating){
         // TODO: Implement token ring syncronised rate biography with +1 or -1
+    }
+    
+    public static int getBioRating(String fetchUsername) {
+        // TODO get the bio rating for the selected user
+        return 0;
     }
     
     public static String takeSnapshot(){

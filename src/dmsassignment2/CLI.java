@@ -12,7 +12,7 @@ import java.util.Scanner;
  */
 public class CLI {
     private static final Scanner scan = new Scanner(System.in);
-    private static final String[] COMMANDS = {"join", "leave", "snapshot", "get bio", "rate bio"};
+    private static final String[] COMMANDS = {"join", "leave", "update bio", "get bio", "rate bio", "get bio rating", "snapshot"};
     
     public static String getIp() {
         System.out.println("Enter IP Adress of P2P Network");
@@ -50,24 +50,66 @@ public class CLI {
                 }
                 
                 case "leave" -> {
+                    if (!DMSAssignment2.isConnected()) {
+                        System.out.println("Cannot perform this action when not connected to P2P network.");
+                        break;
+                    }
+                    
                     if(DMSAssignment2.leaveNetwork()) {
                         System.out.println("Successfully left the P2P network.");
-                        return;
+                        return; // exit commandLoop
                     }
                     else {
                         System.out.println("Failed to leave P2P network.");
                     }
                 }
                 
+                case "update bio" -> {
+                    if (!DMSAssignment2.isConnected()) {
+                        System.out.println("Cannot perform this action when not connected to P2P network.");
+                        break;
+                    }
+                    
+                    System.out.print("Enter new bio: ");
+                    String newBio = scan.nextLine().strip();
+                    DMSAssignment2.setBio(newBio);
+                }
+                
                 case "snapshot" -> {
+                    if (!DMSAssignment2.isConnected()) {
+                        System.out.println("Cannot perform this action when not connected to P2P network.");
+                        break;
+                    }
+                    
                     System.out.println(DMSAssignment2.takeSnapshot());
+                    
                 }
                 
                 case "get bio" -> {
+                    if (!DMSAssignment2.isConnected()) {
+                        System.out.println("Cannot perform this action when not connected to P2P network.");
+                        break;
+                    }
+                    
                     System.out.println(DMSAssignment2.getBio(getUsername()));
                 }
                 
+                case "get bio rating" -> {
+                    if (!DMSAssignment2.isConnected()) {
+                        System.out.println("Cannot perform this action when not connected to P2P network.");
+                        break;
+                    }
+                    
+                    String fetchUsername = getUsername();
+                    
+                    System.out.println(DMSAssignment2.getBioRating(fetchUsername));
+                }
+                
                 case "rate bio" -> {
+                    if (!DMSAssignment2.isConnected()) {
+                        System.out.println("Cannot perform this action when not connected to P2P network.");
+                        break;
+                    }
                     
                     String username = getUsername();
                     System.out.println("Like[L], Dislike[D], cancel[ENTER]");
