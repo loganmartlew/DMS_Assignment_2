@@ -34,17 +34,13 @@ public class TokenTreeNode {
     public void constructFullTree(TokenTreeNode parent, List<TokenTreeNode> nodes) {
         if (parent == null) {
             this.tokenLocation = TokenLocation.HERE;
-            // sort nodes by pid in descending order
-            nodes.sort((TokenTreeNode n1, TokenTreeNode n2) -> {
-                return n2.pid.compareTo(n1.pid);
-            });
         }   // else location remains ABOVE
 
-        if (nodes.size() == 0) {    // leaf node
+        if (nodes.size() == 0) {    // this is a leaf node
             return;
         }
 
-        if (nodes.size() == 1) {    // single node
+        if (nodes.size() == 1) {    // there is a single child
             this.left = nodes.get(0);
             this.left.constructFullTree(parent, nodes.subList(1, nodes.size()));
             return;
