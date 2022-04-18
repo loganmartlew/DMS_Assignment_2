@@ -73,9 +73,17 @@ public class CLI {
                     }
                     
                     System.out.println("Users in P2P network:");
-                    for(String user: DMSAssignment2.getUsernames()) {
-                        System.out.println("\t" + user);
+
+                    try {
+                        for(String user: DMSAssignment2.getUsernames()) {
+                            System.out.println("\t" + user);
+                        }
                     }
+                    catch(Exception e) {
+                        System.out.println("User not found");
+                    }
+
+                    
                 }
                 
                 case "update bio" -> {
