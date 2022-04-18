@@ -27,6 +27,15 @@ public class DMSAssignment2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        joinNetwork();
+        CLI.commandLoop();  // Main thread execution will remain in this function until participant has left the network.
+        
+        System.out.println("P2P participant main method terminating.");
+    }
+    
+    public static boolean joinNetwork() {
+        // String ip = CLI.getIp()
         Registry registry = connectToRegistry();
         
         try {
@@ -34,6 +43,7 @@ public class DMSAssignment2 {
         } catch(RemoteException e) {
             System.out.println("Could not initialize ChangRobertsElection object");
             e.printStackTrace();
+            return false;
         }
         
         try {
@@ -41,6 +51,12 @@ public class DMSAssignment2 {
         } catch (RemoteException ex) {
             System.out.println("Couldn't run election");
         }
+        
+        return true;
+    }
+    
+    public static boolean leaveNetwork() {
+        // TODO: Implement leaving of network
     }
 
     private static Registry connectToRegistry() {
