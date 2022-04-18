@@ -118,7 +118,7 @@ public class TokenTreeNodeImpl implements TokenTreeNode, Serializable {
         return true;
     }
 
-    public void releaseToken() {
+    public synchronized void releaseToken() {
         usingToken = false;
         // notify all waiting threads
         notifyAll();
