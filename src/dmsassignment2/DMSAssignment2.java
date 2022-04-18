@@ -128,9 +128,9 @@ public class DMSAssignment2 {
     }
 
     private static void initializeTokenTree() throws RemoteException {
-        TokenTreeNode remoteObject = new TokenTreeNode(Long.toString(PROCESS_ID));
+        TokenTreeNodeImpl remoteObject = new TokenTreeNodeImpl(Long.toString(PROCESS_ID));
 
-        String objectName = TokenTreeNode.getTreeObjectName(PROCESS_ID);
+        String objectName = TokenTreeNodeImpl.getTreeObjectName(PROCESS_ID);
 
         try {
             TokenTreeNode stub = (TokenTreeNode) 
@@ -142,7 +142,7 @@ public class DMSAssignment2 {
             throw new RemoteException(ex.getMessage());
         }
 
-        String leaderName = TokenTreeNode.getTreeObjectName(startElection());
+        String leaderName = TokenTreeNodeImpl.getTreeObjectName(startElection());
         TokenTreeNode leader = getTreeObject(leaderName);
 
         PeerConnections connections = getPeerConnections();
@@ -150,7 +150,7 @@ public class DMSAssignment2 {
         names.remove(leaderName);
 
         List<TokenTreeNode> nodes = new ArrayList();
-        names.forEach(name -> nodes.add(getTreeObject(TokenTreeNode.getTreeObjectName(name))));
+        names.forEach(name -> nodes.add(getTreeObject(TokenTreeNodeImpl.getTreeObjectName(name))));
         
         leader.constructFullTree(null, nodes);
     }
@@ -272,8 +272,17 @@ public class DMSAssignment2 {
         try {
             initializeLeaderElection();
             System.out.println("Added to election ring");
-        } catch(RemoteException e) {
+        } catch (RemoteException e) {
             System.out.println("LeaderElection initialization failed");
+            return false;
+        }
+
+        try {
+            initializeTokenTree();
+            System.out.println("Added to token tree");
+        } catch (RemoteException e) {
+            System.out.println("TokenTree initialization failed");
+            e.printStackTrace();
             return false;
         }
         
