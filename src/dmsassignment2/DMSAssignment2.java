@@ -142,6 +142,23 @@ public class DMSAssignment2 {
             throw new RemoteException(ex.getMessage());
         }
 
+        rebuildTokenTreeNodes();
+    }
+
+    private static void uninitializeTokenTree() throws RemoteException {
+        try {
+            String objectName = TokenTreeNodeImpl.getTreeObjectName(PROCESS_ID);
+
+            registry.unbind(objectName);
+        } catch (RemoteException | NotBoundException ex) {
+            System.out.println("Failed to unbind own TokenTree object to registry");
+            throw new RemoteException(ex.getMessage());
+        }
+
+        rebuildTokenTreeNodes();
+    }
+
+    private static void rebuildTokenTreeNodes() throws RemoteException {
         String leaderName = TokenTreeNodeImpl.getTreeObjectName(startElection());
         TokenTreeNode leader = getTreeObject(leaderName);
 
@@ -304,6 +321,15 @@ public class DMSAssignment2 {
             System.out.println("Removed from election ring");
         } catch (RemoteException e) {
             System.out.println("LeaderElection uninitialization failed");
+            return false;
+        }
+
+        try {
+            uninitializeTokenTree();
+            System.out.println("Removed from token tree");
+        } catch (RemoteException e) {
+            System.out.println("TokenTree uninitialization failed");
+            e.printStackTrace();
             return false;
         }
         
