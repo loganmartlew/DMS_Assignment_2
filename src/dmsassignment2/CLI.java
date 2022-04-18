@@ -124,7 +124,7 @@ public class CLI {
                     }
                     
                     String username = getUsername();
-                    System.out.println("Like[L], Dislike[D], cancel[ENTER]");
+                    System.out.print("Like[L], Dislike[D], cancel[ENTER]: ");
                     String action = scan.nextLine().strip().toLowerCase();
                     
                     // Switch on chosen action
@@ -150,7 +150,7 @@ public class CLI {
                 }
                     
                 default -> {
-                    System.out.println("Command \"" + cmd + "\" not recognised.");
+                    System.out.println("Unrecognised command: \"" + cmd + "\".");
                 }
                     
             }
