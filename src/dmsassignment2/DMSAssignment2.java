@@ -48,7 +48,6 @@ public class DMSAssignment2 {
         try {
             LocateRegistry.createRegistry(1099);
         } catch (RemoteException e) {
-            System.out.println("Can't create a new registry");
         }
         
         try {
@@ -162,12 +161,10 @@ public class DMSAssignment2 {
         for (int i = 0; i < creObjects.size(); i++) {
             if (i == creObjects.size() - 1) {
                 creObjects.get(i).setNextProcess(creObjects.get(0));
-                System.out.println(creNames.get(i) + " > " + creNames.get(0));
                 continue;
             }
             
             creObjects.get(i).setNextProcess(creObjects.get(i + 1));
-            System.out.println(creNames.get(i) + " > " + creNames.get(i + 1));
         }
     }
     

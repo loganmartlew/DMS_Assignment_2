@@ -14,6 +14,8 @@ public class VectorTimestamp {
     private int index;
     private ArrayList<Integer> vector;
     
+    public VectorTimestamp() {}
+    
     public VectorTimestamp(int index) {
         this.index = index;
         this.vector = new ArrayList();
