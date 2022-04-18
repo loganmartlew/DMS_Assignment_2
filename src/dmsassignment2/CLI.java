@@ -91,7 +91,12 @@ public class CLI {
                         break;
                     }
                     
-                    System.out.println(DMSAssignment2.getBio(getUsername()));
+                    try {
+                        System.out.println(DMSAssignment2.getBio(getUsername()));
+                    }
+                    catch(Exception e) {
+                        System.out.println("User not found");
+                    }
                 }
                 
                 case "get bio rating" -> {
@@ -99,10 +104,15 @@ public class CLI {
                         System.out.println("Cannot perform this action when not connected to P2P network.");
                         break;
                     }
-                    
+
                     String fetchUsername = getUsername();
-                    
-                    System.out.println(DMSAssignment2.getBioRating(fetchUsername));
+
+                    try{
+                        System.out.println(DMSAssignment2.getBioRating(fetchUsername));
+                    }
+                    catch(Exception e) {
+                        System.out.println("User not found");
+                    }
                 }
                 
                 case "rate bio" -> {
@@ -116,18 +126,23 @@ public class CLI {
                     String action = scan.nextLine().strip().toLowerCase();
                     
                     // Switch on chosen action
-                    switch(action){
-                        case "l" -> {
-                            DMSAssignment2.rateBio(username, 1);
-                            System.out.println("Liked " + username + "'s biography.");
+                    try {
+                        switch(action){
+                            case "l" -> {
+                                DMSAssignment2.rateBio(username, 1);
+                                System.out.println("Liked " + username + "'s biography.");
+                            }
+                            case "d" -> {
+                                DMSAssignment2.rateBio(username, -1);
+                                System.out.println("Disliked " + username + "'s biography.");
+                            }
+                            default -> {
+                                System.out.println("Cancelled.");
+                            }
                         }
-                        case "d" -> {
-                            DMSAssignment2.rateBio(username, -1);
-                            System.out.println("Disliked " + username + "'s biography.");
-                        }
-                        default -> {
-                            System.out.println("Cancelled.");
-                        }
+                    }
+                    catch(Exception e) {
+                        System.out.println("User not found");
                     }
 
                 }
