@@ -6,6 +6,9 @@ package dmsassignment2;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -23,7 +26,7 @@ public class PeerConnectionsImpl implements PeerConnections {
         this.peers.add(user);
     }
     
-    public void removePeer(String id) {
+    public void removePeer(String id) throws RemoteException {
         this.peers.remove(this.getUserById(id));
     }
     
@@ -31,26 +34,32 @@ public class PeerConnectionsImpl implements PeerConnections {
         return this.peers;
     }
     
-    public List<String> getNames() {
+    public List<String> getNames() throws RemoteException {
         List<String> names = new ArrayList<String>();
         
-        this.peers.forEach(user -> names.add(user.id));
+        this.peers.forEach(user -> {
+            try {
+                names.add(user.getId());
+            } catch (RemoteException ex) {
+                System.out.println("Error accessing names");
+            }
+        });
         
         return names;
     }
     
-    public User getUserByName(String name) {
+    public User getUserByName(String name) throws RemoteException {
         for (User user : peers) {
-            if (user.username.equals(name)) {
+            if (user.getUsername().equals(name)) {
                 return user;
             }
         }
         return null;
     }
     
-    public User getUserById(String id) {
+    public User getUserById(String id) throws RemoteException {
         for (User user : peers) {
-            if (user.id.equals(id)) {
+            if (user.getId().equals(id)) {
                 return user;
             }
         }

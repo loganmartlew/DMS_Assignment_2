@@ -5,12 +5,13 @@
 package dmsassignment2;
 
 import java.util.List;
+import java.rmi.Remote;
 
 /**
  *
  * @author Logan
  */
-public class TokenTreeNode {
+public class TokenTreeNode implements Remote {
     enum TokenLocation {
         ABOVE,
         LEFT,
@@ -114,5 +115,13 @@ public class TokenTreeNode {
         usingToken = false;
         // notify all waiting threads
         notifyAll();
+    }
+
+    public static String getTreeObjectName(long processName) {
+        return "tree-node-" + processName;
+    }
+
+    public static String getTreeObjectName(String processName) {
+        return "tree-node-" + processName;
     }
 }

@@ -126,6 +126,34 @@ public class DMSAssignment2 {
             creObjects.get(i).setNextProcess(creObjects.get(i + 1));
         }
     }
+
+    private static void initializeTokenTree() throws RemoteException {
+        TokenTreeNode remoteObject = new TokenTreeNode(Long.toString(PROCESS_ID));
+
+        String objectName = TokenTreeNode.getTreeObjectName(PROCESS_ID);
+
+        try {
+            TokenTreeNode stub = (TokenTreeNode) 
+                UnicastRemoteObject.exportObject(remoteObject, 0);
+
+            registry.rebind(objectName, stub);
+        } catch (RemoteException ex) {
+            System.out.println("Failed to bind own TokenTree object to registry");
+            throw new RemoteException(ex.getMessage());
+        }
+
+        String leaderName = TokenTreeNode.getTreeObjectName(startElection());
+        TokenTreeNode leader = getTreeObject(leaderName);
+
+        PeerConnections connections = getPeerConnections();
+        List<String> names = connections.getNames();
+        names.remove(leaderName);
+
+        List<TokenTreeNode> nodes = new ArrayList();
+        names.forEach(name -> nodes.add(getTreeObject(TokenTreeNode.getTreeObjectName(name))));
+        
+        leader.constructFullTree(null, nodes);
+    }
     
     private static long startElection() {
         try {
@@ -161,6 +189,19 @@ public class DMSAssignment2 {
     private static LeaderElection getElectionObject(String name) {
         try {
             LeaderElection object = (LeaderElection)
+                    registry.lookup(name);
+            
+            return object;
+        } catch (RemoteException | NotBoundException ex) {
+            System.out.println("Couldn't look up object with name " + name);
+        }
+        
+        return null;
+    }
+
+    private static TokenTreeNode getTreeObject(String name) {
+        try {
+            TokenTreeNode object = (TokenTreeNode)
                     registry.lookup(name);
             
             return object;
@@ -207,12 +248,12 @@ public class DMSAssignment2 {
         
         // TODO: use username to create a new User object and register that in the registry
         
-        User newUser = null;
+        UserImpl newUser = null;
         
         try {
-            newUser = new User(Long.toString(PROCESS_ID), username);
+            newUser = new UserImpl(Long.toString(PROCESS_ID), username);
             User stub = (User) UnicastRemoteObject.exportObject(newUser, 0);
-            registry.rebind(User.getUserObjectName(PROCESS_ID), stub);
+            registry.rebind(UserImpl.getUserObjectName(PROCESS_ID), stub);
         } catch (RemoteException ex) {
             System.out.println("Failed to add user to registry");
             return false;
@@ -222,7 +263,7 @@ public class DMSAssignment2 {
             if (newUser == null) throw new RemoteException();
             
             PeerConnections connections = getPeerConnections();
-            connections.addPeer(newUser);
+            connections.addPeer((User)newUser);
         } catch (RemoteException ex) {
             System.out.println("Failed to add self to connection list");
             return false;
