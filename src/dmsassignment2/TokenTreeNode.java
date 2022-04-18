@@ -53,9 +53,9 @@ public class TokenTreeNode {
         this.right.constructFullTree(this, nodes.subList(nodes.size() / 2 + 2, nodes.size()));
     }
 
-    public boolean requestToken(TokenTreeNode requester) {
+    public synchronized boolean requestToken(TokenTreeNode requester) {
         if (accessRequested) {
-            // TODO: Somehow block the requester until the current requester has released the token...
+            // TODO: This node is currently utilising the token, so we need to wait for it to be released...
         }
 
         // Node is not currently requesting
@@ -92,7 +92,7 @@ public class TokenTreeNode {
         return true;
     }
 
-    public void relinquishToken() {
+    public void releaseToken() {
         accessRequested = false;
 
         // TODO: Somehow notify the next node waiting that the token is now available...

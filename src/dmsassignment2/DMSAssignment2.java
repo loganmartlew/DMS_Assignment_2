@@ -112,8 +112,8 @@ public class DMSAssignment2 {
     
     private static void rebuildLeaderElectionNodes(List<String> names) 
             throws RemoteException {
-        List<String> creNames = new ArrayList();
-        List<LeaderElection> creObjects = new ArrayList();
+        List<String> creNames = new ArrayList<String>();
+        List<LeaderElection> creObjects = new ArrayList<LeaderElection>();
         names.forEach(name -> creNames.add(LeaderElectionImpl.getLeaderObjectName(name)));
         creNames.forEach(name -> creObjects.add(getElectionObject(name)));
         
@@ -243,7 +243,7 @@ public class DMSAssignment2 {
         // TODO: set current user bio
     }
     
-    public static String getBio(String username){
+    public static String getBio(String fetchUsername){
         // TODO: Implement RMI get user biography
         
         
@@ -255,7 +255,7 @@ public class DMSAssignment2 {
     }
     
     public static int getBioRating(String fetchUsername) {
-        // TODO get the bio rating for the selected user
+        // TODO: get the bio rating for the selected user
         return 0;
     }
     

@@ -16,7 +16,7 @@ public class PeerConnectionsImpl implements PeerConnections {
     public static final String NAME = "connections";
     
     public PeerConnectionsImpl() {
-        this.peers = new ArrayList();
+        this.peers = new ArrayList<User>();
     }
     
     public void addPeer(User user) {
@@ -32,7 +32,7 @@ public class PeerConnectionsImpl implements PeerConnections {
     }
     
     public List<String> getNames() {
-        List<String> names = new ArrayList();
+        List<String> names = new ArrayList<String>();
         
         this.peers.forEach(user -> names.add(user.id));
         
