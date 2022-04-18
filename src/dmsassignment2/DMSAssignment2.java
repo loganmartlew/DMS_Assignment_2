@@ -207,6 +207,7 @@ public class DMSAssignment2 {
         }
     }
     
+    // ----- User command methods (excluding leaveNetwork) ----- \\
     public static String getBio(String fetchUsername){
         // TODO: Implement RMI get user biography
         return "";
