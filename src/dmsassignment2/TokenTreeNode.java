@@ -23,6 +23,8 @@ public class TokenTreeNode {
     private TokenTreeNode parent = null;
     private TokenTreeNode left = null;
     private TokenTreeNode right = null;
+
+    private boolean usingToken = false;
     
     private TokenLocation tokenLocation = TokenLocation.ABOVE;
     
@@ -52,10 +54,19 @@ public class TokenTreeNode {
         this.right.constructFullTree(this, nodes.subList(nodes.size() / 2 + 2, nodes.size()));
     }
 
-    public synchronized boolean getToken(TokenTreeNode requester) {
-        // Node is not currently requesting
-        boolean success = false;
-        if (this.tokenLocation != TokenLocation.HERE) {
+    public synchronized boolean getToken(TokenTreeNode requester) {    
+        if (this.tokenLocation == TokenLocation.HERE) {
+            if (usingToken) {
+                // Block the requesting node until the token is released
+                try {
+                    wait();
+                } catch (InterruptedException ex) {
+                    System.out.println("InterruptedException in getToken()");
+                }
+            }
+        }      
+        else {
+            boolean success = false;
 
             // if the token is not here, then request the token from the token location
             if (this.tokenLocation == TokenLocation.ABOVE) {
@@ -70,11 +81,14 @@ public class TokenTreeNode {
                 // if the token is right, then request the token from the right child
                 success = this.right.getToken(this);
             }
-        }
 
-        if (!success) {
-            // failed to fetch the token, so return false
-            return false;
+            if (success) {
+                tokenLocation = TokenLocation.HERE;
+            }
+            else {
+                // failed to fetch the token, so return false
+                return false;
+            }
         }
 
         // TOKEN is now HERE
@@ -84,10 +98,19 @@ public class TokenTreeNode {
         else if(requester == right) {
             tokenLocation = TokenLocation.RIGHT;
         }
-        else {
+        else if (requester == parent) {
             tokenLocation = TokenLocation.ABOVE;
+        }
+        else {
+            usingToken = true;
         }
 
         return true;
+    }
+
+    public void releaseToken() {
+        usingToken = false;
+        // notify all waiting threads
+        notifyAll();
     }
 }
