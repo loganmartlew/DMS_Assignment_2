@@ -142,10 +142,12 @@ public class DMSAssignment2 {
             throw new RemoteException(ex.getMessage());
         }
 
-        rebuildTokenTreeNodes();
+        String leaderName = TokenTreeNodeImpl.getTreeObjectName(startElection(true));
+
+        rebuildTokenTreeNodes(getElectionObject(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID)));
     }
 
-    private static void uninitializeTokenTree() throws RemoteException {
+    private static void uninitializeTokenTree(LeaderElection election) throws RemoteException {
         try {
             String objectName = TokenTreeNodeImpl.getTreeObjectName(PROCESS_ID);
 
@@ -155,12 +157,15 @@ public class DMSAssignment2 {
             throw new RemoteException(ex.getMessage());
         }
 
-        rebuildTokenTreeNodes();
+        rebuildTokenTreeNodes(election);
     }
 
-    private static void rebuildTokenTreeNodes() throws RemoteException {
-        String leaderName = TokenTreeNodeImpl.getTreeObjectName(startElection());
+    private static void rebuildTokenTreeNodes(LeaderElection election) throws RemoteException {
+        String leaderName = TokenTreeNodeImpl.getTreeObjectName(election.startElection());
         TokenTreeNode leader = getTreeObject(leaderName);
+        System.out.println("LEADER: " + leaderName);
+
+        if (leader == null) return;
 
         PeerConnections connections = getPeerConnections();
         List<String> names = connections.getIds();
@@ -172,7 +177,7 @@ public class DMSAssignment2 {
         leader.constructFullTree(null, nodes);
     }
     
-    private static long startElection() {
+    private static long startElection(boolean ownElectionObject) {
         try {
             LeaderElection election =
                     (LeaderElection) registry.lookup(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
@@ -218,6 +223,8 @@ public class DMSAssignment2 {
 
     private static TokenTreeNode getTreeObject(String name) {
         try {
+            System.out.println("GETTING OBJECT: " + name);
+            System.out.println(Arrays.asList(registry.list()));
             TokenTreeNode object = (TokenTreeNode)
                     registry.lookup(name);
             
@@ -263,8 +270,6 @@ public class DMSAssignment2 {
             return false;
         }
         
-        // TODO: use username to create a new User object and register that in the registry
-        
         UserImpl newUser = null;
         
         try {
@@ -309,13 +314,22 @@ public class DMSAssignment2 {
     
     public static boolean leaveNetwork() {
         try {
+            registry.unbind(UserImpl.getUserObjectName(PROCESS_ID));
+        } catch (RemoteException | NotBoundException ex) {
+            System.out.println("Failed to remove user from registry");
+            return false;
+        }
+
+        try {
             PeerConnections connections = getPeerConnections();
             connections.removePeer(Long.toString(PROCESS_ID));
         } catch (RemoteException ex) {
             System.out.println("Failed to remove self from connection list");
             return false;
         }
-        
+
+        LeaderElection election = getElectionObject(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
+
         try {
             uninitializeLeaderElection();
             System.out.println("Removed from election ring");
@@ -325,7 +339,7 @@ public class DMSAssignment2 {
         }
 
         try {
-            uninitializeTokenTree();
+            uninitializeTokenTree(election.getNextProcess());
             System.out.println("Removed from token tree");
         } catch (RemoteException e) {
             System.out.println("TokenTree uninitialization failed");
