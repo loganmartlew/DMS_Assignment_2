@@ -53,9 +53,9 @@ public class TokenTreeNodeImpl implements TokenTreeNode, Serializable {
 
         // if there is a left and a right node, then set left node as left child and right node as right child and pass each one half of the remaining nodes
         this.left = nodes.get(0);
-        this.left.constructFullTree(this, new ArrayList(nodes.subList(1, nodes.size() / 2 + 1)));
-        this.right = nodes.get(nodes.size() / 2 + 1);
-        this.right.constructFullTree(this, new ArrayList(nodes.subList(nodes.size() / 2 + 2, nodes.size())));
+        this.left.constructFullTree(this, new ArrayList(nodes.subList(1, nodes.size() / 2)));
+        this.right = nodes.get(nodes.size() / 2);
+        this.right.constructFullTree(this, new ArrayList(nodes.subList(nodes.size() / 2 + 1, nodes.size())));
     }
     
 
