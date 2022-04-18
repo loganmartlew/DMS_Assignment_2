@@ -12,22 +12,48 @@ import java.util.List;
  * @author Logan
  */
 public class PeerConnectionsImpl implements PeerConnections {
-    private List<String> peers;
+    private List<User> peers;
     public static final String NAME = "connections";
     
     public PeerConnectionsImpl() {
         this.peers = new ArrayList();
     }
     
-    public void addPeer(String name) {
-        this.peers.add(name);
+    public void addPeer(User user) {
+        this.peers.add(user);
     }
     
-    public void removePeer(String name) {
-        this.peers.remove(name);
+    public void removePeer(String id) {
+        this.peers.remove(this.getUserById(id));
     }
     
-    public List<String> getPeers() {
+    public List<User> getPeers() {
         return this.peers;
+    }
+    
+    public List<String> getNames() {
+        List<String> names = new ArrayList();
+        
+        this.peers.forEach(user -> names.add(user.id));
+        
+        return names;
+    }
+    
+    public User getUserByName(String name) {
+        for (User user : peers) {
+            if (user.username.equals(name)) {
+                return user;
+            }
+        }
+        return null;
+    }
+    
+    public User getUserById(String id) {
+        for (User user : peers) {
+            if (user.id.equals(id)) {
+                return user;
+            }
+        }
+        return null;
     }
 }

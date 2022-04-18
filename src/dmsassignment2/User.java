@@ -12,11 +12,13 @@ import java.rmi.RemoteException;
  * @author Brock
  */
 public class User implements Remote {
+    public final String id;
     public final String username;
     private String biography = "";
     private int biographyRating = 0;
     
-    public User(String username) throws RemoteException {
+    public User(String id, String username) throws RemoteException {
+        this.id = id;
         this.username = username;
     }
     
@@ -36,4 +38,11 @@ public class User implements Remote {
         return biographyRating;
     }
     
+    public static String getUserObjectName(long processName) {
+        return "user-" + processName;
+    }
+    
+    public static String getUserObjectName(String processName) {
+        return "user-" + processName;
+    }
 }

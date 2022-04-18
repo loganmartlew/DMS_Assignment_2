@@ -14,8 +14,6 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import  java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -86,7 +84,7 @@ public class DMSAssignment2 {
         
         try {
             PeerConnections connections = getPeerConnections();
-            List<String> names = connections.getPeers();
+            List<String> names = connections.getNames();
             rebuildLeaderElectionNodes(names);
         } catch (RemoteException ex) {
             System.out.println("Failed to arrange LeaderElection nodes");
@@ -104,7 +102,7 @@ public class DMSAssignment2 {
         
         try {
             PeerConnections connections = getPeerConnections();
-            List<String> names = connections.getPeers();
+            List<String> names = connections.getNames();
             rebuildLeaderElectionNodes(names);
         } catch (RemoteException ex) {
             System.out.println("Failed to arrange LeaderElection nodes");
@@ -128,6 +126,25 @@ public class DMSAssignment2 {
             creObjects.get(i).setNextProcess(creObjects.get(i + 1));
         }
     }
+    
+    private static long startElection() {
+        try {
+            LeaderElection election =
+                    (LeaderElection) registry.lookup(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
+            
+            return election.startElection();
+        } catch (NotBoundException | RemoteException ex) {
+            System.out.println("Couldnt find own election object");
+        }
+        
+        return 0;
+    }
+    
+    public static boolean isConnected() {
+        return connected;
+    }
+    
+    // ----- Fetch RMI Object Methods ----- \\
     
     private static PeerConnections getPeerConnections() {
         PeerConnections connections = null;
@@ -154,23 +171,9 @@ public class DMSAssignment2 {
         return null;
     }
     
-    private static long startElection() {
-        try {
-            LeaderElection election =
-                    (LeaderElection) registry.lookup(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
-            
-            return election.startElection();
-        } catch (NotBoundException | RemoteException ex) {
-            System.out.println("Couldnt find own election object");
-        }
-        
-        return 0;
-    }
-    
-    public static boolean isConnected() {
-        return connected;
-    }
-    
+//    private static User getUser() {
+//        
+//    }
     
     // ----- User command methods ----- \\
     
@@ -182,9 +185,22 @@ public class DMSAssignment2 {
         
         // TODO: use username to create a new User object and register that in the registry
         
+        User newUser = null;
+        
         try {
+            newUser = new User(Long.toString(PROCESS_ID), username);
+            User stub = (User) UnicastRemoteObject.exportObject(newUser, 0);
+            registry.rebind(User.getUserObjectName(PROCESS_ID), newUser);
+        } catch (RemoteException ex) {
+            System.out.println("Failed to add user to registry");
+            return false;
+        }
+        
+        try {
+            if (newUser == null) throw new RemoteException();
+            
             PeerConnections connections = getPeerConnections();
-            connections.addPeer(Long.toString(PROCESS_ID));
+            connections.addPeer(newUser);
         } catch (RemoteException ex) {
             System.out.println("Failed to add self to connection list");
             return false;
@@ -227,8 +243,10 @@ public class DMSAssignment2 {
         // TODO: set current user bio
     }
     
-    public static String getBio(String fetchUsername){
+    public static String getBio(String username){
         // TODO: Implement RMI get user biography
+        
+        
         return "";
     }
     

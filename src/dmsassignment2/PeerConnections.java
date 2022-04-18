@@ -13,7 +13,8 @@ import java.util.List;
  * @author Logan
  */
 public interface PeerConnections extends Remote {
-    public void addPeer(String name) throws RemoteException;
-    public void removePeer(String name) throws RemoteException;
-    public List<String> getPeers() throws RemoteException;
+    public void addPeer(User user) throws RemoteException;
+    public void removePeer(String id) throws RemoteException;
+    public List<User> getPeers() throws RemoteException;
+    public List<String> getNames() throws RemoteException;
 }
