@@ -26,6 +26,8 @@ public class DMSAssignment2 {
     private static final long PROCESS_ID = ProcessHandle.current().pid();
     
     private static Registry registry = connectToRegistry();
+    
+    private static boolean connected = false;
 
     /**
      * @param args the command line arguments
@@ -36,7 +38,6 @@ public class DMSAssignment2 {
             return;
         }
         
-        joinNetwork();
         CLI.commandLoop();  // Main thread execution will remain in this function until participant has left the network.
         
         System.out.println("P2P participant main method terminating.");
@@ -66,46 +67,6 @@ public class DMSAssignment2 {
         }
         
         return localRegistry;
-    }
-    
-    public static boolean joinNetwork() {
-        try {
-            PeerConnections connections = getPeerConnections();
-            connections.addPeer(Long.toString(PROCESS_ID));
-        } catch (RemoteException ex) {
-            System.out.println("Failed to add self to connection list");
-            return false;
-        }
-        
-        try {
-            initializeLeaderElection();
-            System.out.println("Added to election ring");
-        } catch(RemoteException e) {
-            System.out.println("LeaderElection initialization failed");
-            return false;
-        }
-        
-        return true;
-    }
-    
-    public static boolean leaveNetwork() {
-        try {
-            PeerConnections connections = getPeerConnections();
-            connections.removePeer(Long.toString(PROCESS_ID));
-        } catch (RemoteException ex) {
-            System.out.println("Failed to remove self from connection list");
-            return false;
-        }
-        
-        try {
-            uninitializeLeaderElection();
-            System.out.println("Removed from election ring");
-        } catch (RemoteException e) {
-            System.out.println("LeaderElection uninitialization failed");
-            return false;
-        }
-        
-        return true;
     }
     
     private static void initializeLeaderElection() throws RemoteException {
@@ -204,7 +165,59 @@ public class DMSAssignment2 {
         }
     }
     
-    // ----- User command methods (excluding leaveNetwork) ----- \\
+    
+    // ----- User command methods ----- \\
+    
+    public static boolean joinNetwork(String username) {
+        if(connected){
+            System.out.println("User already in network.");
+            return false;
+        }
+        
+        // TODO: use username to create a new User object and register that in the registry
+        
+        try {
+            PeerConnections connections = getPeerConnections();
+            connections.addPeer(Long.toString(PROCESS_ID));
+        } catch (RemoteException ex) {
+            System.out.println("Failed to add self to connection list");
+            return false;
+        }
+        
+        try {
+            initializeLeaderElection();
+            System.out.println("Added to election ring");
+        } catch(RemoteException e) {
+            System.out.println("LeaderElection initialization failed");
+            return false;
+        }
+        
+        
+        connected = true;
+        return true;
+    }
+    
+    public static boolean leaveNetwork() {
+        try {
+            PeerConnections connections = getPeerConnections();
+            connections.removePeer(Long.toString(PROCESS_ID));
+        } catch (RemoteException ex) {
+            System.out.println("Failed to remove self from connection list");
+            return false;
+        }
+        
+        try {
+            uninitializeLeaderElection();
+            System.out.println("Removed from election ring");
+        } catch (RemoteException e) {
+            System.out.println("LeaderElection uninitialization failed");
+            return false;
+        }
+        
+        connected = false;
+        return true;
+    }
+    
     public static String getBio(String fetchUsername){
         // TODO: Implement RMI get user biography
         return "";

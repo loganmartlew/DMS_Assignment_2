@@ -12,7 +12,7 @@ import java.util.Scanner;
  */
 public class CLI {
     private static final Scanner scan = new Scanner(System.in);
-    private static final String[] COMMANDS = {"leave", "snapshot", "get bio", "rate bio"};
+    private static final String[] COMMANDS = {"join", "leave", "snapshot", "get bio", "rate bio"};
     
     public static String getIp() {
         System.out.println("Enter IP Adress of P2P Network");
@@ -40,6 +40,15 @@ public class CLI {
             cmd = scan.nextLine().strip().toLowerCase(); // Fetch input ignorning case and white space
             
             switch(cmd) {
+                case "join" -> {
+                    String username = getUsername();
+                    if(DMSAssignment2.joinNetwork(username)) {
+                        System.out.println("Successfuly joined the P2P network.");
+                    } else {
+                        System.out.println("Failed to join P2P network.");
+                    }
+                }
+                
                 case "leave" -> {
                     if(DMSAssignment2.leaveNetwork()) {
                         System.out.println("Successfully left the P2P network.");
@@ -61,7 +70,7 @@ public class CLI {
                 case "rate bio" -> {
                     
                     String username = getUsername();
-                    System.out.println("Like[l], Dislike[d], cancel[ENTER]");
+                    System.out.println("Like[L], Dislike[D], cancel[ENTER]");
                     String action = scan.nextLine().strip().toLowerCase();
                     
                     // Switch on chosen action
