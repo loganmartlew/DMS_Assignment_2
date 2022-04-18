@@ -42,16 +42,30 @@ public class TokenTreeNode {
 
         if (nodes.size() == 1) {    // there is a single child
             this.left = nodes.get(0);
-            this.left.constructFullTree(parent, nodes.subList(1, nodes.size()));
+            this.left.constructFullTree(parent, nodes.subList(1, 1));
             return;
         }
 
-        // if there is a left and a right node, then set left node as left child and right node as right child and pass each half of the remaining nodes
+        // if there is a left and a right node, then set left node as left child and right node as right child and pass each one half of the remaining nodes
         this.left = nodes.get(0);
         this.left.constructFullTree(this, nodes.subList(1, nodes.size() / 2 + 1));
         this.right = nodes.get(nodes.size() / 2 + 1);
         this.right.constructFullTree(this, nodes.subList(nodes.size() / 2 + 2, nodes.size()));
-        
-        
+    }
+
+    public void requestToken() {
+        if (accessRequested) {  // How do I synchronise this?
+            // Ask the requesting Node to please wait its turn
+        }
+
+        // if (this.tokenLocation == TokenLocation.HERE) {
+        //     this.accessRequested = false;
+        // } else if (this.tokenLocation == TokenLocation.ABOVE) {
+        //     this.parent.requestToken();
+        // } else if (this.tokenLocation == TokenLocation.LEFT) {
+        //     this.left.requestToken();
+        // } else if (this.tokenLocation == TokenLocation.RIGHT) {
+        //     this.right.requestToken();
+        // }
     }
 }
