@@ -62,10 +62,10 @@ public class LeaderElectionImpl implements LeaderElection, Serializable {
     }
     
     public static String getLeaderObjectName(long processName) {
-        return "cre" + processName;
+        return "election-node-" + processName;
     }
     
     public static String getLeaderObjectName(String processName) {
-        return "cre" + processName;
+        return "election-node-" + processName;
     }
 }

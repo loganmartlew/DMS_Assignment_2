@@ -14,6 +14,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import  java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -80,51 +82,37 @@ public class DMSAssignment2 {
             initializeLeaderElection();
             System.out.println("Added to election ring");
         } catch(RemoteException e) {
-            System.out.println("Could not initialize LeaderElection object");
+            System.out.println("LeaderElection initialization failed");
             return false;
         }
         
         return true;
     }
     
-    public static boolean leaveNetwork() throws RemoteException {
-        PeerConnections connections = getPeerConnections();
-        if (connections == null) return false;
-        
-        connections.removePeer(Long.toString(PROCESS_ID));
-        
+    public static boolean leaveNetwork() {
         try {
-            registry.unbind(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
-        } catch (NotBoundException | AccessException ex) {
+            PeerConnections connections = getPeerConnections();
+            connections.removePeer(Long.toString(PROCESS_ID));
+        } catch (RemoteException ex) {
+            System.out.println("Failed to remove self from connection list");
             return false;
         }
         
-        List<String> names = connections.getPeers();
-        rebuildLeaderElectionNodes(names);
+        try {
+            uninitializeLeaderElection();
+            System.out.println("Removed from election ring");
+        } catch (RemoteException e) {
+            System.out.println("LeaderElection uninitialization failed");
+            return false;
+        }
         
         return true;
-    }
-    
-    private static void startElection() {
-        try {
-            LeaderElection election =
-                    (LeaderElection) registry.lookup(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
-            
-            election.startElection();
-        } catch (NotBoundException | RemoteException ex) {
-            System.out.println("Couldnt find own election object");
-        }
     }
     
     private static void initializeLeaderElection() throws RemoteException {
         LeaderElectionImpl remoteObject = new LeaderElectionImpl();
        
         String objectName = LeaderElectionImpl.getLeaderObjectName(PROCESS_ID);
-       
-        PeerConnections connections = getPeerConnections();
-        if (connections == null) return;
-        
-        List<String> names = connections.getPeers();
 
         try {
             LeaderElection stub = (LeaderElection) 
@@ -133,13 +121,34 @@ public class DMSAssignment2 {
             registry.rebind(objectName, stub);
         } catch (RemoteException ex) {
             System.out.println("Failed to bind own LeaderElection object to registry");
-            return;
+            throw new RemoteException(ex.getMessage());
         }
         
         try {
+            PeerConnections connections = getPeerConnections();
+            List<String> names = connections.getPeers();
             rebuildLeaderElectionNodes(names);
         } catch (RemoteException ex) {
             System.out.println("Failed to arrange LeaderElection nodes");
+            throw new RemoteException(ex.getMessage());
+        }
+    }
+    
+    private static void uninitializeLeaderElection() throws RemoteException {
+        try {
+            registry.unbind(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
+        } catch (NotBoundException | AccessException ex) {
+            System.out.println("Failed to unbind own LeaderElection object from registry");
+            throw new RemoteException(ex.getMessage());
+        }
+        
+        try {
+            PeerConnections connections = getPeerConnections();
+            List<String> names = connections.getPeers();
+            rebuildLeaderElectionNodes(names);
+        } catch (RemoteException ex) {
+            System.out.println("Failed to arrange LeaderElection nodes");
+            throw new RemoteException(ex.getMessage());
         }
     }
     
@@ -185,6 +194,17 @@ public class DMSAssignment2 {
         }
         
         return null;
+    }
+    
+    private static void startElection() {
+        try {
+            LeaderElection election =
+                    (LeaderElection) registry.lookup(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
+            
+            election.startElection();
+        } catch (NotBoundException | RemoteException ex) {
+            System.out.println("Couldnt find own election object");
+        }
     }
     
     public static String getBio(String fetchUsername){
