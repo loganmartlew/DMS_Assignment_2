@@ -25,7 +25,6 @@ public class TokenTreeNode {
     private TokenTreeNode right = null;
     
     private TokenLocation tokenLocation = TokenLocation.ABOVE;
-    private boolean accessRequested = false;
     
     public TokenTreeNode(String pid) {
         this.pid = pid;
@@ -53,32 +52,32 @@ public class TokenTreeNode {
         this.right.constructFullTree(this, nodes.subList(nodes.size() / 2 + 2, nodes.size()));
     }
 
-    public synchronized boolean requestToken(TokenTreeNode requester) {
-        if (accessRequested) {
-            // TODO: This node is currently utilising the token, so we need to wait for it to be released...
-        }
-
+    public synchronized boolean getToken(TokenTreeNode requester) {
         // Node is not currently requesting
+        boolean success = false;
         if (this.tokenLocation != TokenLocation.HERE) {
-            accessRequested = true;
 
             // if the token is not here, then request the token from the token location
             if (this.tokenLocation == TokenLocation.ABOVE) {
                 // if the token is above, then request the token from the parent
-                this.parent.requestToken(this);
+                success = this.parent.getToken(this);
             } 
             else if (this.tokenLocation == TokenLocation.LEFT) {
                 // if the token is left, then request the token from the left child
-                this.left.requestToken(this);
+                success = this.left.getToken(this);
             } 
             else if (this.tokenLocation == TokenLocation.RIGHT) {
                 // if the token is right, then request the token from the right child
-                this.right.requestToken(this);
+                success = this.right.getToken(this);
             }
         }
 
+        if (!success) {
+            // failed to fetch the token, so return false
+            return false;
+        }
+
         // TOKEN is now HERE
-        accessRequested = false;
         if(requester == left) {
             tokenLocation = TokenLocation.LEFT;
         }
@@ -90,11 +89,5 @@ public class TokenTreeNode {
         }
 
         return true;
-    }
-
-    public void releaseToken() {
-        accessRequested = false;
-
-        // TODO: Somehow notify the next node waiting that the token is now available...
     }
 }
