@@ -11,8 +11,8 @@ import java.rmi.RemoteException;
  *
  * @author Logan
  */
-public interface ChangRobertsElection extends Remote {
-    public void setNextProcess(ChangRobertsElection nextProcess) throws RemoteException;
+public interface LeaderElection extends Remote {
+    public void setNextProcess(LeaderElection nextProcess) throws RemoteException;
     public void startElection() throws RemoteException;
     public void recieveCandidate(long candidate) throws RemoteException;
     public void recieveLeader(long leader) throws RemoteException;

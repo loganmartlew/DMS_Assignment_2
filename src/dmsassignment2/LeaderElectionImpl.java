@@ -11,21 +11,21 @@ import java.rmi.RemoteException;
  *
  * @author Logan
  */
-public class ChangRobertsElectionImpl implements ChangRobertsElection, Serializable {
+public class LeaderElectionImpl implements LeaderElection, Serializable {
     private static final long ID = ProcessHandle.current().pid();
     
-    private ChangRobertsElection nextProcess;
+    private LeaderElection nextProcess;
     private long leaderProcessID;
     
     private boolean participant = false;
     
-    public ChangRobertsElectionImpl() {}
+    public LeaderElectionImpl() {}
     
-    public ChangRobertsElectionImpl(ChangRobertsElectionImpl nextProcess) {
+    public LeaderElectionImpl(LeaderElectionImpl nextProcess) {
         this.nextProcess = nextProcess;
     }
     
-    public void setNextProcess(ChangRobertsElection nextProcess) throws RemoteException {
+    public void setNextProcess(LeaderElection nextProcess) throws RemoteException {
         this.nextProcess = nextProcess;
     }
     
@@ -59,5 +59,13 @@ public class ChangRobertsElectionImpl implements ChangRobertsElection, Serializa
         if (leader != ID) {
             this.nextProcess.recieveLeader(leader);
         }
+    }
+    
+    public static String getLeaderObjectName(long processName) {
+        return "cre" + processName;
+    }
+    
+    public static String getLeaderObjectName(String processName) {
+        return "cre" + processName;
     }
 }

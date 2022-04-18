@@ -12,7 +12,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import static java.util.Arrays.asList;
+import  java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,12 +21,18 @@ import java.util.List;
  */
 public class DMSAssignment2 {
     
-    private static final long processID = ProcessHandle.current().pid();
+    private static final long PROCESS_ID = ProcessHandle.current().pid();
+    
+    private static Registry registry = connectToRegistry();
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        if (registry == null) {
+            System.out.println("Failed to connect to registry");
+            return;
+        }
         
         joinNetwork();
         CLI.commandLoop();  // Main thread execution will remain in this function until participant has left the network.
@@ -34,33 +40,8 @@ public class DMSAssignment2 {
         System.out.println("P2P participant main method terminating.");
     }
     
-    public static boolean joinNetwork() {
-        // String ip = CLI.getIp()
-        Registry registry = connectToRegistry();
-        
-        try {
-            initializeChangRoberts(registry);
-        } catch(RemoteException e) {
-            System.out.println("Could not initialize ChangRobertsElection object");
-            e.printStackTrace();
-            return false;
-        }
-        
-        try {
-            startElection(registry);
-        } catch (RemoteException ex) {
-            System.out.println("Couldn't run election");
-        }
-        
-        return true;
-    }
-    
-    public static boolean leaveNetwork() {
-        // TODO: Implement leaving of network
-    }
-
     private static Registry connectToRegistry() {
-        Registry registry;
+        Registry localRegistry = null;
         
         try {
             LocateRegistry.createRegistry(1099);
@@ -69,82 +50,105 @@ public class DMSAssignment2 {
         }
         
         try {
-            registry = LocateRegistry.getRegistry();
+            localRegistry = LocateRegistry.getRegistry();
             
             // Ensures a PeerConnections object is in registry
-            if (!asList(registry.list()).contains(PeerConnectionsImpl.NAME)) {
+            if (!Arrays.asList(localRegistry.list()).contains(PeerConnectionsImpl.NAME)) {
                 PeerConnectionsImpl remoteObject = new PeerConnectionsImpl();
                 
                 PeerConnections stub = 
                     (PeerConnections) UnicastRemoteObject.exportObject(remoteObject, 0);
-                registry.rebind(PeerConnectionsImpl.NAME, stub);
+                localRegistry.rebind(PeerConnectionsImpl.NAME, stub);
             }
-            
-            PeerConnections connections;
-            try {
-                connections = (PeerConnections) registry.lookup(PeerConnectionsImpl.NAME);
-                connections.addPeer(Long.toString(processID));
-                
-                System.out.println("Connected with process id: " + processID);
-                System.out.println(connections.getPeers());
-            } catch (NotBoundException ex) {
-                System.out.println("PeerConnections object not found");
-            } catch (AccessException ex) {
-                System.out.println(ex.getMessage());
-            }
-            
-            return registry;
         } catch (RemoteException e) {
             System.err.println("Unable to bind to registry: " + e);
         }
         
-        return null;
+        return localRegistry;
     }
     
-    private static void startElection(Registry registry) throws RemoteException {
+    public static boolean joinNetwork() {
         try {
-            ChangRobertsElection election =
-                    (ChangRobertsElection) registry.lookup(getCreName(processID));
+            PeerConnections connections = getPeerConnections();
+            connections.addPeer(Long.toString(PROCESS_ID));
+        } catch (RemoteException ex) {
+            System.out.println("Failed to add self to connection list");
+            return false;
+        }
+        
+        try {
+            initializeLeaderElection();
+            System.out.println("Added to election ring");
+        } catch(RemoteException e) {
+            System.out.println("Could not initialize LeaderElection object");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public static boolean leaveNetwork() throws RemoteException {
+        PeerConnections connections = getPeerConnections();
+        if (connections == null) return false;
+        
+        connections.removePeer(Long.toString(PROCESS_ID));
+        
+        try {
+            registry.unbind(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
+        } catch (NotBoundException | AccessException ex) {
+            return false;
+        }
+        
+        List<String> names = connections.getPeers();
+        rebuildLeaderElectionNodes(names);
+        
+        return true;
+    }
+    
+    private static void startElection() {
+        try {
+            LeaderElection election =
+                    (LeaderElection) registry.lookup(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
             
             election.startElection();
-        } catch (NotBoundException | AccessException ex) {
-            System.out.println("Couldnt find object");
+        } catch (NotBoundException | RemoteException ex) {
+            System.out.println("Couldnt find own election object");
         }
     }
     
-    private static void initializeChangRoberts(Registry registry) throws RemoteException {
-        ChangRobertsElectionImpl remoteObject = new ChangRobertsElectionImpl();
+    private static void initializeLeaderElection() throws RemoteException {
+        LeaderElectionImpl remoteObject = new LeaderElectionImpl();
        
-        String objectName = getCreName(processID);
+        String objectName = LeaderElectionImpl.getLeaderObjectName(PROCESS_ID);
        
-        PeerConnections connections = null;
-        
-        try {
-            connections = (PeerConnections) registry.lookup(PeerConnectionsImpl.NAME);
-        } catch (NotBoundException | AccessException ex) {
-            System.out.println("Could not find PeerConnections object in registry");
-        }
-        
+        PeerConnections connections = getPeerConnections();
         if (connections == null) return;
         
         List<String> names = connections.getPeers();
 
-        ChangRobertsElection stub = (ChangRobertsElection) 
-            UnicastRemoteObject.exportObject(remoteObject, 0);
+        try {
+            LeaderElection stub = (LeaderElection) 
+                UnicastRemoteObject.exportObject(remoteObject, 0);
 
-        registry.rebind(objectName, stub);
+            registry.rebind(objectName, stub);
+        } catch (RemoteException ex) {
+            System.out.println("Failed to bind own LeaderElection object to registry");
+            return;
+        }
         
-        arrangeChangRobertsNodes(names, registry);
-
-        System.out.println("Added to election ring");
+        try {
+            rebuildLeaderElectionNodes(names);
+        } catch (RemoteException ex) {
+            System.out.println("Failed to arrange LeaderElection nodes");
+        }
     }
     
-    private static void arrangeChangRobertsNodes(List<String> names, Registry registry) 
+    private static void rebuildLeaderElectionNodes(List<String> names) 
             throws RemoteException {
         List<String> creNames = new ArrayList();
-        List<ChangRobertsElection> creObjects = new ArrayList();
-        names.forEach(name -> creNames.add(getCreName(name)));
-        creNames.forEach(name -> creObjects.add(getElectionObject(name, registry)));
+        List<LeaderElection> creObjects = new ArrayList();
+        names.forEach(name -> creNames.add(LeaderElectionImpl.getLeaderObjectName(name)));
+        creNames.forEach(name -> creObjects.add(getElectionObject(name)));
         
         for (int i = 0; i < creObjects.size(); i++) {
             if (i == creObjects.size() - 1) {
@@ -158,9 +162,21 @@ public class DMSAssignment2 {
         }
     }
     
-    private static ChangRobertsElection getElectionObject(String name, Registry registry) {
+    private static PeerConnections getPeerConnections() {
+        PeerConnections connections = null;
+        
         try {
-            ChangRobertsElection object = (ChangRobertsElection)
+            connections = (PeerConnections) registry.lookup(PeerConnectionsImpl.NAME);
+        } catch (NotBoundException | RemoteException ex) {
+            System.out.println("Could not find PeerConnections object in registry");
+        }
+        
+        return connections;
+    }
+    
+    private static LeaderElection getElectionObject(String name) {
+        try {
+            LeaderElection object = (LeaderElection)
                     registry.lookup(name);
             
             return object;
@@ -169,13 +185,5 @@ public class DMSAssignment2 {
         }
         
         return null;
-    }
-    
-    private static String getCreName(long processName) {
-        return "cre" + processName;
-    }
-    
-    private static String getCreName(String processName) {
-        return "cre" + processName;
     }
 }

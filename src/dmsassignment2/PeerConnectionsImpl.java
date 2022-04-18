@@ -23,6 +23,10 @@ public class PeerConnectionsImpl implements PeerConnections {
         this.peers.add(name);
     }
     
+    public void removePeer(String name) {
+        this.peers.remove(name);
+    }
+    
     public List<String> getPeers() {
         return this.peers;
     }
