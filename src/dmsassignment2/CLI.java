@@ -59,15 +59,18 @@ public class CLI {
                 }
                 
                 case "rate bio" -> {
+                    
                     String username = getUsername();
                     System.out.println("Like[l], Dislike[d], cancel[ENTER]");
-                    String choice = scan.nextLine().strip().toLowerCase();
-                    switch(choice.charAt(0)){
-                        case 'l' -> {
+                    String action = scan.nextLine().strip().toLowerCase();
+                    
+                    // Switch on chosen action
+                    switch(action){
+                        case "l" -> {
                             DMSAssignment2.rateBio(username, 1);
                             System.out.println("Liked " + username + "'s biography.");
                         }
-                        case 'd' -> {
+                        case "d" -> {
                             DMSAssignment2.rateBio(username, -1);
                             System.out.println("Disliked " + username + "'s biography.");
                         }
@@ -75,7 +78,7 @@ public class CLI {
                             System.out.println("Cancelled.");
                         }
                     }
-                    
+
                 }
                     
                 default -> {
