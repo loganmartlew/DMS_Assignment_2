@@ -55,7 +55,7 @@ public class TokenTreeNode {
 
     public boolean requestToken(TokenTreeNode requester) {
         if (accessRequested) {
-            // somehow block the requester until the current requester has released the token
+            // TODO: Somehow block the requester until the current requester has released the token...
         }
 
         // Node is not currently requesting
@@ -90,12 +90,11 @@ public class TokenTreeNode {
         }
 
         return true;
-
     }
 
     public void relinquishToken() {
         accessRequested = false;
 
-        // Somehow notify the next node in waiting
+        // TODO: Somehow notify the next node waiting that the token is now available...
     }
 }
