@@ -105,6 +105,11 @@ public class DMSAssignment2 {
         return true;
     }
     
+    public static String takeSnapshot(){
+        // TODO: Implement snapshot algorithm
+        return "";
+    }
+    
     private static void startElection() {
         try {
             LeaderElection election =
