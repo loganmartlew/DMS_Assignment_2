@@ -12,6 +12,7 @@ import java.util.Scanner;
  */
 public class CLI {
     private static Scanner scan = new Scanner(System.in);
+    private static final String[] COMMANDS = {"leave", "snapshot"};
     
     public static String getIp() {
         System.out.println("Enter IP Adress of P2P Network");
@@ -20,11 +21,15 @@ public class CLI {
     }
     
     public static void commandLoop() {
-        System.out.println("Available commands:\n\tleave\n\t"); // TODO: Add other options for utilising the P2P network
+        System.out.println("Available commands:"); // TODO: Add other options for utilising the P2P network
+        for(String command: COMMANDS){
+            System.out.println("\t" + command);
+        }
         
+        String cmd;
         while(true){
             System.out.print(">");
-            String cmd = scan.nextLine().toLowerCase().strip(); // Fetch input ignorning case and white space
+            cmd = scan.nextLine().toLowerCase().strip(); // Fetch input ignorning case and white space
             
             switch(cmd){
                 case "leave" -> {
@@ -35,6 +40,10 @@ public class CLI {
                     else {
                         System.out.println("Failed to leave P2P network.");
                     }
+                }
+                
+                case "snapshot" -> {
+                    System.out.println(DMSAssignment2.takeSnapshot());
                 }
                     
                 default -> {

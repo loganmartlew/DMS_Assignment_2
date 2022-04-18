@@ -57,6 +57,11 @@ public class DMSAssignment2 {
     
     public static boolean leaveNetwork() {
         // TODO: Implement leaving of network
+        return true;
+    }
+    
+    public static String takeSnapshot(){
+        // TODO: Implement snapshot algorithm
     }
 
     private static Registry connectToRegistry() {
