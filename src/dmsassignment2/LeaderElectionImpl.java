@@ -29,9 +29,10 @@ public class LeaderElectionImpl implements LeaderElection, Serializable {
         this.nextProcess = nextProcess;
     }
     
-    public void startElection() throws RemoteException {
+    public long startElection() throws RemoteException {
         this.participant = true;
         this.nextProcess.recieveCandidate(ID);
+        return leaderProcessID;
     }
     
     public void recieveCandidate(long candidate) throws RemoteException {
@@ -54,7 +55,6 @@ public class LeaderElectionImpl implements LeaderElection, Serializable {
     public void recieveLeader(long leader) throws RemoteException {
         this.leaderProcessID = leader;
         this.participant = false;
-        System.out.println("Leader: " + leader);
         
         if (leader != ID) {
             this.nextProcess.recieveLeader(leader);

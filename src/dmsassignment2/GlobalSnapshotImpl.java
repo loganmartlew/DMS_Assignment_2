@@ -19,8 +19,8 @@ public class GlobalSnapshotImpl implements GlobalSnapshot {
     public GlobalSnapshotImpl() {}
     
     public void recieveMessage() {
-        if (!this.ownTaken) {
-            this.snapshot = 
-        }
+//        if (!this.ownTaken) {
+//            this.snapshot = 
+//        }
     }
 }

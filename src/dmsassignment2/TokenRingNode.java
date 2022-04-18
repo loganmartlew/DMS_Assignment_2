@@ -13,12 +13,12 @@ public class TokenRingNode {
     private boolean accessRequested = false;
     
     // RMI Object
-    private TokenRingNode next;
+    private TokenRingNode nextProcess;
     
     public TokenRingNode() {}
     
     public void setNextNode(TokenRingNode node) {
-        this.next = node;
+        this.nextProcess = node;
     }
     
     public void recieveToken() {
@@ -37,6 +37,6 @@ public class TokenRingNode {
     
     public void sendToken() {
         this.hasToken = false;
-        this.next.recieveToken();
+        this.nextProcess.recieveToken();
     }
 }

@@ -13,7 +13,7 @@ import java.rmi.RemoteException;
  */
 public interface LeaderElection extends Remote {
     public void setNextProcess(LeaderElection nextProcess) throws RemoteException;
-    public void startElection() throws RemoteException;
+    public long startElection() throws RemoteException;
     public void recieveCandidate(long candidate) throws RemoteException;
     public void recieveLeader(long leader) throws RemoteException;
 }

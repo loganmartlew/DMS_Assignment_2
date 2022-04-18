@@ -154,15 +154,17 @@ public class DMSAssignment2 {
         return null;
     }
     
-    private static void startElection() {
+    private static long startElection() {
         try {
             LeaderElection election =
                     (LeaderElection) registry.lookup(LeaderElectionImpl.getLeaderObjectName(PROCESS_ID));
             
-            election.startElection();
+            return election.startElection();
         } catch (NotBoundException | RemoteException ex) {
             System.out.println("Couldnt find own election object");
         }
+        
+        return 0;
     }
     
     
@@ -191,7 +193,6 @@ public class DMSAssignment2 {
             System.out.println("LeaderElection initialization failed");
             return false;
         }
-        
         
         connected = true;
         return true;
