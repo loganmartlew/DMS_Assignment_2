@@ -33,7 +33,7 @@ public class TokenTreeNode {
     
     public void constructFullTree(TokenTreeNode parent, List<TokenTreeNode> nodes) {
         if (parent == null) {
-            this.tokenLocation = TokenLocation.HERE;
+            this.tokenLocation = TokenLocation.HERE;    // Root node holds the token to start
         }   // else location remains ABOVE
 
         if (nodes.size() == 0) {    // this is a leaf node
@@ -53,19 +53,49 @@ public class TokenTreeNode {
         this.right.constructFullTree(this, nodes.subList(nodes.size() / 2 + 2, nodes.size()));
     }
 
-    public void requestToken() {
-        if (accessRequested) {  // How do I synchronise this?
-            // Ask the requesting Node to please wait its turn
+    public boolean requestToken(TokenTreeNode requester) {
+        if (accessRequested) {
+            // somehow block the requester until the current requester has released the token
         }
 
-        // if (this.tokenLocation == TokenLocation.HERE) {
-        //     this.accessRequested = false;
-        // } else if (this.tokenLocation == TokenLocation.ABOVE) {
-        //     this.parent.requestToken();
-        // } else if (this.tokenLocation == TokenLocation.LEFT) {
-        //     this.left.requestToken();
-        // } else if (this.tokenLocation == TokenLocation.RIGHT) {
-        //     this.right.requestToken();
-        // }
+        // Node is not currently requesting
+        if (this.tokenLocation != TokenLocation.HERE) {
+            accessRequested = true;
+
+            // if the token is not here, then request the token from the token location
+            if (this.tokenLocation == TokenLocation.ABOVE) {
+                // if the token is above, then request the token from the parent
+                this.parent.requestToken(this);
+            } 
+            else if (this.tokenLocation == TokenLocation.LEFT) {
+                // if the token is left, then request the token from the left child
+                this.left.requestToken(this);
+            } 
+            else if (this.tokenLocation == TokenLocation.RIGHT) {
+                // if the token is right, then request the token from the right child
+                this.right.requestToken(this);
+            }
+        }
+
+        // TOKEN is now HERE
+        accessRequested = false;
+        if(requester == left) {
+            tokenLocation = TokenLocation.LEFT;
+        }
+        else if(requester == right) {
+            tokenLocation = TokenLocation.RIGHT;
+        }
+        else {
+            tokenLocation = TokenLocation.ABOVE;
+        }
+
+        return true;
+
+    }
+
+    public void relinquishToken() {
+        accessRequested = false;
+
+        // Somehow notify the next node in waiting
     }
 }
