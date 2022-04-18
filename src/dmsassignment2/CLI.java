@@ -14,7 +14,7 @@ import javax.sound.sampled.SourceDataLine;
  */
 public class CLI {
     private static final Scanner scan = new Scanner(System.in);
-    private static final String[] COMMANDS = {"join", "leave", "update bio", "get bio", "rate bio", "get bio rating", "snapshot"};
+    private static final String[] COMMANDS = {"join", "leave", "get users", "update bio", "get bio", "rate bio", "get bio rating", "snapshot"};
     
     public static String getIp() {
         System.out.println("Enter IP Adress of P2P Network");
@@ -63,6 +63,18 @@ public class CLI {
                     }
                     else {
                         System.out.println("Failed to leave P2P network.");
+                    }
+                }
+
+                case "get users" -> {
+                    if (!DMSAssignment2.isConnected()) {
+                        System.out.println("Cannot perform this action when not connected to P2P network.");
+                        break;
+                    }
+                    
+                    System.out.println("Users in P2P network:");
+                    for(String user: DMSAssignment2.getUsernames()) {
+                        System.out.println("\t" + user);
                     }
                 }
                 

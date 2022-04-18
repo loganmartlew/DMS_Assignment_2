@@ -263,8 +263,6 @@ public class DMSAssignment2 {
             return false;
         }
         
-        // TODO: use username to create a new User object and register that in the registry
-        
         UserImpl newUser = null;
         
         try {
