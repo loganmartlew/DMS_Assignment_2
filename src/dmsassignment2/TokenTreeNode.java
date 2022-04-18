@@ -56,7 +56,11 @@ public class TokenTreeNode {
     }
     
 
-    public synchronized boolean getToken(TokenTreeNode requester) {   // Syncronised on this node so that only one thread can ask this node for the token at a time 
+    public boolean getToken() {
+        return getToken(null);
+    }
+
+    private synchronized boolean getToken(TokenTreeNode requester) {   // Syncronised on this node so that only one thread can ask this node for the token at a time 
         if (this.tokenLocation == TokenLocation.HERE) {
             if (usingToken) {
                 // Block the requesting node until the token is released
