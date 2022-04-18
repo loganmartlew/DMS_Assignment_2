@@ -7,8 +7,6 @@ package dmsassignment2;
 import java.util.ArrayList;
 import java.util.List;
 import java.rmi.RemoteException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -34,12 +32,26 @@ public class PeerConnectionsImpl implements PeerConnections {
         return this.peers;
     }
     
-    public List<String> getNames() throws RemoteException {
+    public List<String> getIds() throws RemoteException {
+        List<String> ids = new ArrayList<String>();
+        
+        this.peers.forEach(user -> {
+            try {
+                ids.add(user.getId());
+            } catch (RemoteException ex) {
+                System.out.println("Error accessing ids");
+            }
+        });
+        
+        return ids;
+    }
+
+    public List<String> getUsernames() throws RemoteException {
         List<String> names = new ArrayList<String>();
         
         this.peers.forEach(user -> {
             try {
-                names.add(user.getId());
+                names.add(user.getUsername());
             } catch (RemoteException ex) {
                 System.out.println("Error accessing names");
             }

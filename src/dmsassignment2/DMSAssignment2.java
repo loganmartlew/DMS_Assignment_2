@@ -84,7 +84,7 @@ public class DMSAssignment2 {
         
         try {
             PeerConnections connections = getPeerConnections();
-            List<String> names = connections.getNames();
+            List<String> names = connections.getIds();
             rebuildLeaderElectionNodes(names);
         } catch (RemoteException ex) {
             System.out.println("Failed to arrange LeaderElection nodes");
@@ -102,7 +102,7 @@ public class DMSAssignment2 {
         
         try {
             PeerConnections connections = getPeerConnections();
-            List<String> names = connections.getNames();
+            List<String> names = connections.getIds();
             rebuildLeaderElectionNodes(names);
         } catch (RemoteException ex) {
             System.out.println("Failed to arrange LeaderElection nodes");
@@ -163,7 +163,7 @@ public class DMSAssignment2 {
         TokenTreeNode leader = getTreeObject(leaderName);
 
         PeerConnections connections = getPeerConnections();
-        List<String> names = connections.getNames();
+        List<String> names = connections.getIds();
         names.remove(leaderName);
 
         List<TokenTreeNode> nodes = new ArrayList();
@@ -336,6 +336,15 @@ public class DMSAssignment2 {
         connected = false;
         return true;
     }
+
+    public static List<String> getUsernames() throws RemoteException {
+        PeerConnections connections = getPeerConnections();
+        if (connections == null) {
+            throw new NullPointerException("Could not get connections");
+        }
+
+        return connections.getUsernames();
+    }
     
     public static void setBio(String newBio) {
         User user = getCurrentUser();
@@ -367,7 +376,7 @@ public class DMSAssignment2 {
             throw new NullPointerException("Could not find user");
         };
 
-        
+
     }
     
     public static int getBioRating(String username) throws RemoteException, NullPointerException {
