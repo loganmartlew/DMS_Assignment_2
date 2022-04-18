@@ -263,33 +263,28 @@ public class DMSAssignment2 {
     
     public static void setBio(String newBio) {
         User user = getCurrentUser();
-        if (user == null) return;
 
         try {
             user.setBiography(newBio);
         } catch (RemoteException ex) {
-            System.out.println("Failed to set bio");
+            return;
         }
     }
     
-    public static String getBio(String username){
+    public static String getBio(String username) throws RemoteException, NullPointerException {
         User user = getUser(username);
-        if (user == null) return "User not found";
-
-        try {
-            return user.getBiography();
-        } catch (RemoteException ex) {
-            System.out.println("Could not retrieve biography");
+        if (user == null) {
+            throw new NullPointerException("User does not exist");
         }
-
-        return "Error getting bio";
+            
+        return user.getBiography();
     }
     
-    public static void rateBio(String username, int rating){
+    public static void rateBio(String username, int rating) {
         // TODO: Implement token ring syncronised rate biography with +1 or -1
     }
     
-    public static int getBioRating(String username) throws RemoteException {
+    public static int getBioRating(String username) throws RemoteException, NullPointerException {
         User user = getUser(username);
         if (user == null) {
             throw new NullPointerException("User does not exist");
