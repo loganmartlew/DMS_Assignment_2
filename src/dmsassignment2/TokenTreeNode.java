@@ -62,6 +62,7 @@ public class TokenTreeNode {
                     wait();
                 } catch (InterruptedException ex) {
                     System.out.println("InterruptedException in getToken()");
+                    return false;
                 }
             }
         }      
