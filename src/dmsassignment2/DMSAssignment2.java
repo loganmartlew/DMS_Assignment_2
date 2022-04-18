@@ -63,6 +63,14 @@ public class DMSAssignment2 {
     public static String takeSnapshot(){
         // TODO: Implement snapshot algorithm
     }
+    
+    public static String getBio(String fetchUsername){
+        // TODO: Implement RMI get user biography
+    }
+    
+    public static void rateBio(String username, int rating){
+        // TODO: Implement token ring syncronised rate biography with +1 or -1
+    }
 
     private static Registry connectToRegistry() {
         Registry registry;
