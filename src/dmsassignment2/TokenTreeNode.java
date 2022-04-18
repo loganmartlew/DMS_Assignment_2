@@ -54,7 +54,7 @@ public class TokenTreeNode {
         this.right.constructFullTree(this, nodes.subList(nodes.size() / 2 + 2, nodes.size()));
     }
 
-    public synchronized boolean getToken(TokenTreeNode requester) {    
+    public synchronized boolean getToken(TokenTreeNode requester) {   // Syncronised on this node so that only one thread can ask this node for the token at a time 
         if (this.tokenLocation == TokenLocation.HERE) {
             if (usingToken) {
                 // Block the requesting node until the token is released
