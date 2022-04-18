@@ -28,6 +28,10 @@ public class LeaderElectionImpl implements LeaderElection, Serializable {
     public void setNextProcess(LeaderElection nextProcess) throws RemoteException {
         this.nextProcess = nextProcess;
     }
+
+    public LeaderElection getNextProcess() throws RemoteException {
+        return this.nextProcess;
+    }
     
     public long startElection() throws RemoteException {
         this.participant = true;
