@@ -163,7 +163,6 @@ public class DMSAssignment2 {
     private static void rebuildTokenTreeNodes(LeaderElection election) throws RemoteException {
         String leaderName = TokenTreeNodeImpl.getTreeObjectName(election.startElection());
         TokenTreeNode leader = getTreeObject(leaderName);
-        System.out.println("LEADER: " + leaderName);
 
         if (leader == null) return;
 
@@ -223,8 +222,6 @@ public class DMSAssignment2 {
 
     private static TokenTreeNode getTreeObject(String name) {
         try {
-            System.out.println("GETTING OBJECT: " + name);
-            System.out.println(Arrays.asList(registry.list()));
             TokenTreeNode object = (TokenTreeNode)
                     registry.lookup(name);
             
