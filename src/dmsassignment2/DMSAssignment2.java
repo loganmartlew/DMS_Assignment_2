@@ -253,7 +253,7 @@ public class DMSAssignment2 {
         }
 
         return null;
-        }
+    }
     
     // ----- User command methods ----- \\
     
@@ -357,7 +357,17 @@ public class DMSAssignment2 {
     }
     
     public static void rateBio(String username, int rating) {
-        // TODO: Implement token ring syncronised rate biography with +1 or -1
+        TokenTreeNode node = getTreeObject(TokenTreeNodeImpl.getTreeObjectName(PROCESS_ID));
+        if (node == null) {
+            throw new NullPointerException("Could not find tree node");
+        };
+
+        User user = getUser(username);
+        if (user == null) {
+            throw new NullPointerException("Could not find user");
+        };
+
+        
     }
     
     public static int getBioRating(String username) throws RemoteException, NullPointerException {
