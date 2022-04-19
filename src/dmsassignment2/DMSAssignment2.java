@@ -39,6 +39,7 @@ public class DMSAssignment2 {
         CLI.commandLoop();  // Main thread execution will remain in this function until participant has left the network.
         
         System.out.println("P2P participant main method terminating.");
+        // System.exit(0);
     }
     
     private static Registry connectToRegistry() {
