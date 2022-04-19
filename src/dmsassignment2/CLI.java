@@ -31,7 +31,7 @@ public class CLI {
     }
     
     public static void commandLoop() {
-        System.out.println("Available commands:"); // TODO: Add other options for utilising the P2P network
+        System.out.println("Available commands:");
         for(String command: COMMANDS){
             System.out.println("\t" + command);
         }
